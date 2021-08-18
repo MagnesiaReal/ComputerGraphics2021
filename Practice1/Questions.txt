@@ -1,0 +1,14 @@
+Which C language compiler did you use?
+
+	GCC
+
+Which version of the C language compiler did you use?
+
+	gcc version 11.1.0 (GCC) 
+
+Do you know some line equations? Which ones?
+
+	y - y1 = (y2 - y1/ x2 - -x1) * (x - x1)
+
+
+Write your GitHub user: MagnesiaReal
