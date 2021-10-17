@@ -11,3 +11,5 @@ the comand I used to make a video is this
 -i => inputs 
 -shortest => cut the output video when at least one of the inputs finish
 -framerate => framerate output video
+  
+ Video: https://youtu.be/GiTW3XFR-Sg
