@@ -12,19 +12,26 @@
 #define Ver 2001000
 #define Tra 4000000
 
+
+// Args for Drawings Methods with threads
 struct args
 {
   int ini, end;
 };
 
+struct xyz {
+  float x;
+  float y; 
+  float z;
+} show_all_planes;
+
 char bufferus[128];
-int nimg = 0;
 int maxx = INT_MIN, maxy = INT_MIN;
 FILE *ppm_file;
-float **vertexes;
-int **tray;
-int **matrix;
-int size_v = 0, size_tray = 0;
+float **vertexes, **vertexesd; // vertex array, vertex array copy
+int **tray; // list of faces
+int **matrix; // pixel 2D array for ppm file
+int size_v = 0, size_tray = 0; // size of vertex 
 float minusx = 0, minusy = 0, minusz = 0, maxix = -FLT_MAX, maxiy =
   -FLT_MAX, maxiz = -FLT_MAX, miniy = FLT_MAX, minix = FLT_MAX, miniz =
   FLT_MAX;
@@ -34,7 +41,8 @@ pthread_t *threads;
 void
 Bresenham_draw_line (int x1, int y1, int x2, int y2)
 {
-  int dy = y2 - y1, dx = x2 - x1, diagy, diagx, recty, rectx;
+  int dy = y2 - y1, dx = x2 - x1, diagy, diagx;
+  
   if (dy >= 0)
     diagy = 1;			// north diagonal
   else
@@ -50,28 +58,37 @@ Bresenham_draw_line (int x1, int y1, int x2, int y2)
       dx = -dx;
       diagx = -1;
     }
+  int x, y;
+  int *a = &x, *b = &y;
+  if (dy > dx) {
+    int aux = dx;
+    dx = dy;
+    dy = aux;
 
-  if (dx >= dy)
-    {				// si es mayor la distancia en x que en y entonces
-      recty = 0;
-      rectx = diagx;
-    }
-  else
-    {
-      rectx = 0;
-      recty = diagy;
-      int temp = dx;
-      dx = dy;
-      dy = temp;
-    }
-  int x = x1, y = y1, d = 2 * dy - dx, dup1 = 2 * dy, dup2 = 2 * (dy - dx);
+    aux = x1;
+    x1 = y1;
+    y1 = aux;
+
+    aux = x2;
+    x2 = y2;
+    y2 = aux;
+
+    aux = diagx;
+    diagx = diagy;
+    diagy = aux;
+    a = &y;
+    b = &x;
+  }
+  x = x1;
+  y = y1;
+  int d = 2 * dy - dx, dup1 = 2 * dy, dup2 = 2 * (dy - dx);
 
   while (x != x2)
     {
       //printf("matrix[%i][%i]", x, y);
       //fflush(stdout);
-      if ((y >= 0 && x >= 0) && (y <= maxiy && x <= maxix))
-	matrix[y][x] = 99;
+      if ((*b >= 0 && *a >= 0) && (*b <= show_all_planes.y && *a <= show_all_planes.x))
+	matrix[*b][*a] = 99;
 
       if (d >= 0)
 	{
@@ -81,8 +98,7 @@ Bresenham_draw_line (int x1, int y1, int x2, int y2)
 	}
       else
 	{
-	  x += rectx;
-	  y += recty;
+	  x += diagx;
 	  d += dup1;
 	}
     }
@@ -91,10 +107,8 @@ Bresenham_draw_line (int x1, int y1, int x2, int y2)
 void
 Bresenham ()
 {
-  for (int i = 0; i < Tra; ++i)
+  for (int i = 0; i < size_tray; ++i)
     {
-      if (tray[i][0] == 0)
-	break;
       Bresenham_draw_line (vertexes[tray[i][0] - 1][0],
 			   vertexes[tray[i][0] - 1][1],
 			   vertexes[tray[i][1] - 1][0],
@@ -119,8 +133,6 @@ Bresenham_thread (void *argsp)
   //printf("ini=%i end=%i\n", i, end);
   while (i < end)
     {
-      if (tray[i][0] == 0)
-	break;
       Bresenham_draw_line (vertexes[tray[i][0] - 1][0],
 			   vertexes[tray[i][0] - 1][1],
 			   vertexes[tray[i][1] - 1][0],
@@ -177,7 +189,29 @@ new_vertex (float final_matrix[4][4])
 	{
 	  for (int k = 0; k < 4; ++k)
 	    {
-	      nv[i] += final_matrix[i][k] * vertexes[v][k];
+	      nv[i] += final_matrix[i][k] * vertexesd[v][k];
+	    }
+	}
+      // save new vertex
+      for (int i = 0; i < 4; ++i)
+	{
+	  vertexesd[v][i] = nv[i] / nv[3]; // Transform to no homogenious
+	  vertexes[v][i] = nv[i] / nv[3];	// copy that
+	  nv[i] = 0;
+	}
+    }
+}
+
+void Pp_vertex (float Pp_matrix[4][4]) {
+  float nv[4] = { 0, 0, 0, 0 };
+  for (int v = 0; v < size_v; ++v)
+    {
+      // vertex operation
+      for (int i = 0; i < 4; ++i)
+	{
+	  for (int k = 0; k < 4; ++k)
+	    {
+	      nv[i] += Pp_matrix[i][k] * vertexes[v][k];
 	    }
 	}
       // save new vertex
@@ -199,11 +233,11 @@ Save_ppm (char *filename)
       perror ("No se pudo crear el archivo : ");
       exit (-1);
     }
-  fprintf (ppm_file, "P3\n%i %i\n255", (int) maxix + 1, (int) maxiy + 1);
-  for (int i = maxiy; i >= 0; --i)
+  fprintf (ppm_file, "P3\n%i %i\n255", (int) (show_all_planes.x + 1), (int) (show_all_planes.y + 1));
+  for (int i = show_all_planes.y; i >= 0; --i)
     {
       fputs ("\n", ppm_file);
-      for (int j = 0; j <= maxix; ++j)
+      for (int j = 0; j <= show_all_planes.x; ++j)
 	{
 	  if (matrix[i][j] != 0)
 	    fprintf (ppm_file, "%i %i %i ", matrix[i][j] + 61,
@@ -239,6 +273,13 @@ main (int argc, char *argv[])
       vertexes[itr][3] = 1;
     }
 
+  vertexesd = (float **) malloc (Ver * sizeof (float *));
+  for (int itr = 0; itr < Ver; itr++)
+    {
+      vertexesd[itr] = (float *) malloc (4 * sizeof (float));
+      vertexesd[itr][3] = 1;
+    }
+
   tray = (int **) malloc (Tra * sizeof (int *));
   for (int itr = 0; itr < Tra; itr++)
     {
@@ -247,7 +288,6 @@ main (int argc, char *argv[])
 
   char line[128];
   int i = 0, j = 0;
-  float sef = 60.f;
   while (fgets (line, sizeof (line), obj_file) != NULL)
     {
       //fputs(line);
@@ -275,9 +315,9 @@ main (int argc, char *argv[])
 	  if (miniz >= z)
 	    miniz = (z > 0) ? z : 0;
 
-	  vertexes[i][0] = x;
-	  vertexes[i][1] = y;
-	  vertexes[i][2] = z;
+	  vertexesd[i][0] = x;
+	  vertexesd[i][1] = y;
+	  vertexesd[i][2] = z;
 
 	  i++;
 	}
@@ -322,11 +362,6 @@ main (int argc, char *argv[])
   printf
     ("Do you want to translate the object? format -> x y z: 0 0 0\nx y z: ");
   scanf ("%f %f %f", &tx, &ty, &tz);
-
-  /*float f; */
-  /*printf("Perspective proyection\nf="); */
-  /*scanf("%f", &f); */
-
   // x rotation
   float Rx[4][4] = {
     {1, 0, 0, 0},
@@ -378,8 +413,8 @@ main (int argc, char *argv[])
   };
 
   float Tm[4][4] = {
-    {1, 0, 0, -minusx /*- minix*/ },
-    {0, 1, 0, -minusy /*- miniy*/ },
+    {1, 0, 0, 0 /*- minix*/ },
+    {0, 1, 0, 0 /*- miniy*/ },
     {0, 0, 1, -minusz /*- miniz*/ },
     {0, 0, 0, 1}
   };
@@ -400,13 +435,6 @@ main (int argc, char *argv[])
     {0, 0, 0, 1},
   }, aux2[4][4];
 
-  // Perspective Proyection HAVE TROUBLES TROUBLESA TORBUELSFADFK
-  /*float Pp[4][4] = { */
-  /*{f,0,0,0}, */
-  /*{0,f,0,0}, */
-  /*{0,0,f,0}, */
-  /*{0,0,1,0}, */
-  /*}; */
 
   // Perform all matrix multiplications for the frists movements
   matrix_multiplication (Rx, To, aux1);	// move to origin and rotate on x
@@ -447,8 +475,36 @@ main (int argc, char *argv[])
       if (miniz >= vertexes[v][2])
 	miniz = (vertexes[v][2] > 0) ? vertexes[v][2] : 0;
     }
+  
+  show_all_planes.x = (-minusx > maxix) ? maxix-2*minusx : 2*maxix;
+  show_all_planes.y = (-minusy > maxiy) ? maxiy-2*minusy : 2*maxiy;
+
   printf ("maxX=%f maxY=%f\n", maxix, maxiy);
   printf ("Recalculate max and minimums done\n");
+
+  // Automatic perspective projection
+  float f = 0.8f*miniz;
+  printf("%f\n",f);
+  // Perspective Proyection HAVE TROUBLES TROUBLESA TORBUELSFADFK
+  float Pp[4][4] = { 
+  {f,0,0,0}, 
+  {0,f,0,0}, 
+  {0,0,f,0}, 
+  {0,0,1,0}, 
+  };
+
+  // translate all planes
+  float Ts[4][4] = {
+    {1, 0, 0, (-minusx > maxix) ? -minusx : maxix},
+    {0, 1, 0, (-minusy > maxiy) ? -minusy : maxiy},
+    {0, 0, 1, 0},
+    {0, 0, 0, 1}
+  };
+
+  float Fx[4][4] ={0};
+
+  matrix_multiplication(Ts, Pp, Fx);
+  Pp_vertex(Fx);
 
   // New center of object 
   center.x = (maxix + minusx + minix) / 2.f;
@@ -456,10 +512,10 @@ main (int argc, char *argv[])
   center.z = (maxiz + minusz + miniz) / 2.f;
 
   // Pixel matrix for ppm file
-  matrix = (int **) malloc (((int) maxiy + 1) * sizeof (int *));
-  for (i = 0; i < (int) maxiy + 1; ++i)
+  matrix = (int **) malloc (((int) show_all_planes.y + 1) * sizeof (int *));
+  for (i = 0; i < (int) show_all_planes.y + 1; ++i)
     {
-      matrix[i] = (int *) malloc (((int) maxix + 1) * sizeof (int));
+      matrix[i] = (int *) malloc (((int) show_all_planes.x + 1) * sizeof (int));
     }
 
   // translate to origin
@@ -469,7 +525,6 @@ main (int argc, char *argv[])
     {0, 0, 1, -center.z},
     {0, 0, 0, 1}
   };
-
 
   const float ryv = -0.123;
   float Ryv[4][4] = {
@@ -507,7 +562,7 @@ main (int argc, char *argv[])
       printf ("Init Bresenham Parallel Method\n");
       //Bresenham();    
 
-      int tinc = Tra / threadus, tend = 0, tini = 0;
+      int tinc = size_tray / threadus, tend = 0, tini = 0;
       struct args argus[threadus];	// thread arguments 
 
       for (i = 0; i < threadus; ++i)
@@ -515,7 +570,7 @@ main (int argc, char *argv[])
 	  tend += tinc;
 	  argus[i].ini = tini;
 	  if (i + 1 == threadus)
-	    argus[i].end = Tra;
+	    argus[i].end = size_tray;
 	  else
 	    argus[i].end = tend;
 	  pthread_create (threads + i, NULL, Bresenham_thread,
@@ -541,11 +596,12 @@ main (int argc, char *argv[])
 
       // Recalculate vertexes for each frame
       new_vertex (F);
+      Pp_vertex(Fx);
 
       // Reset the pixel matrix
-      for (int i = 0; i <= maxiy; ++i)
+      for (int i = 0; i <= show_all_planes.y; ++i)
 	{
-	  for (int j = 0; j <= maxix; ++j)
+	  for (int j = 0; j <= show_all_planes.x; ++j)
 	    {
 	      matrix[i][j] = 0;
 	    }
