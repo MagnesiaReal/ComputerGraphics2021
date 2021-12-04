@@ -483,9 +483,9 @@ int main (int argc, char *argv[])
   }
 
   srand(time(NULL));
-  unsigned char ra = rand()%256;
-  unsigned char ga = rand()%256;
-  unsigned char ba = rand()%256;
+  /*unsigned char ra = rand()%256;*/
+  /*unsigned char ga = rand()%256;*/
+  /*unsigned char ba = rand()%256;*/
   char line[128];
   int i = 0, j = 0, k = 0, flag = -1;
   while (fgets (line, sizeof (line), obj_file) != NULL)
@@ -566,12 +566,12 @@ int main (int argc, char *argv[])
         /*faces[j-1].G = rand()%256;*/
         /*faces[j-1].B = rand()%256; */
         
-        faces[j-1].R = ra;
-        faces[j-1].G = ga;
-        faces[j-1].B = ba;
-        /*faces[j-1].R = 240;*/
-        /*faces[j-1].G = 255;*/
-        /*faces[j-1].B = 255;*/
+        /*faces[j-1].R = ra;*/
+        /*faces[j-1].G = ga;*/
+        /*faces[j-1].B = ba;*/
+        faces[j-1].R = 240;
+        faces[j-1].G = 255;
+        faces[j-1].B = 255;
         /*faces[j-1].lr = 85*ambient;*/
         /*faces[j-1].lg = 118*ambient;*/
         /*faces[j-1].lb = 138*ambient;*/
