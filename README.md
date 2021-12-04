@@ -15,9 +15,9 @@ Perform a single Rotation, Translation and Scale of an object and transform to P
 ## Practice 4 Animation 1
 Perform a single rotation, translation and scale, then the program perform autimatic Ry rotation and translation.
 
-Without perspective rotation: https://www.youtube.com/watch?v=GiTW3XFR-Sg .
+Without perspective projection: https://www.youtube.com/watch?v=GiTW3XFR-Sg .
 
-The program update with perspective rotation: https://youtu.be/zwxQ31q1uYM .
+The program update with perspective projection: https://youtu.be/zwxQ31q1uYM .
 
 ![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2021-12-03-18:17:17.png)
 
