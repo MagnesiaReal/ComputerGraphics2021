@@ -45,6 +45,10 @@ x(t) = a<sub>x</sub>t<sup>3</sup> + b<sub>x</sub>t<sup>2</sup> + c<sub>x</sub>t 
 y(t) = a<sub>y</sub>t<sup>3</sup> + b<sub>y</sub>t<sup>2</sup> + c<sub>y</sub>t + d<sub>y</sub>
 
 ### Parameters
-./curves <ax> <bx> <cx> <dx> <ay> <by> <cy> <dy> <n-lines>
+./curves \<ax\> \<bx\> \<cx\> \<dx\> \<ay\> \<by\> \<cy\> \<dy\> \<n-lines\>
   
-where <n-lines> is the number of lines for draw this curve
+where \<n-lines\> is the number of lines for draw this curve.
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:17:17.png)
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/curve2D.ppm)
