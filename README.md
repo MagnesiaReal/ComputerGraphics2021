@@ -38,17 +38,62 @@ Video: https://youtu.be/MgJ2_KpBR_Y .
 ![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2021-12-03-18:16:57.png)
 
 ## Curves_activity1
-Its a simple curve in 2 Dimentions following the next ecuations
+Its a simple curve in 2 Dimentions following the next ecuations:
 
 x(t) = a<sub>x</sub>t<sup>3</sup> + b<sub>x</sub>t<sup>2</sup> + c<sub>x</sub>t + d<sub>x</sub>
 
 y(t) = a<sub>y</sub>t<sup>3</sup> + b<sub>y</sub>t<sup>2</sup> + c<sub>y</sub>t + d<sub>y</sub>
 
-### Parameters
+#### Input
 ./curves \<ax\> \<bx\> \<cx\> \<dx\> \<ay\> \<by\> \<cy\> \<dy\> \<n-lines\>
   
 where \<n-lines\> is the number of lines for draw this curve.
 
 ![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:17:17.png)
 
-![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/curve2D.ppm)
+#### Output
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/curve2D.png)
+
+## Curves_activity2
+Curve in 3 Dimentions with perpective projection, this use the next ecuations:
+
+x(t) = a<sub>x</sub>t<sup>3</sup> + b<sub>x</sub>t<sup>2</sup> + c<sub>x</sub>t + d<sub>x</sub>
+
+y(t) = a<sub>y</sub>t<sup>3</sup> + b<sub>y</sub>t<sup>2</sup> + c<sub>y</sub>t + d<sub>y</sub>
+
+z(t) = a<sub>z</sub>t<sup>3</sup> + b<sub>z</sub>t<sup>2</sup> + c<sub>z</sub>t + d<sub>z</sub>
+
+#### Input
+
+./curves \<ax\> \<bx\> \<cx\> \<dx\> \<ay\> \<by\> \<cy\> \<dy\> \<az\> \<bz\> \<cz\> \<dz\>
+
+all of these are coefficients for x y and z.
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:33:32.png)
+
+#### Output
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/curve3D.png)
+
+## Curves_Hermite
+
+The next image explains how it is works:
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:41:36.png)
+
+#### Input
+
+Hermite curve needs four parameters:
+
+./hermite \<p1x\> \<p1y\> \<p1z\> \<p2x\> \<p2y\> \<p2z\> \<h1x\> \<h1y\> \<h1z\> \<h2x\> \<h2y\> \<h2z\>
+
+this program uses 200 fixed lines for the curve.
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:26:31.png)
+
+#### Output
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/hermite_curve.png)
+
+
