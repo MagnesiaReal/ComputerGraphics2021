@@ -96,4 +96,37 @@ this program uses 200 fixed lines for the curve.
 
 ![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/hermite_curve.png)
 
+## Curves_Bezier
+
+The next image explains how it is works:
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:43:26.png)
+
+#### Input
+
+Bezier curve needs four parameters:
+
+./bezier \<p1x\> \<p1y\> \<p1z\> \<p2x\> \<p2y\> \<p2z\> \<b1x\> \<b1y\> \<b1z\> \<b2x\> \<b2y\> \<b2z\>
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:21:09.png)
+
+#### Output
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/bezier_curve.png)
+
+## Cuves_Surfaces
+
+The next image is a representacion for each parameter of surface program:
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:48:07.png)
+
+#### Input
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/2022-01-04-16:28:33.png)
+
+#### Output
+
+![alt text](https://github.com/MagnesiaReal/ComputerGraphics2021/blob/main/tests/surface.png)
+
+
 
